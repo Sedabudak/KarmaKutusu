@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Karma Kutusu</title>
+</head>
+<body>
+    <h1>Karma Kutusu 🌟</h1>
+
+    <form id="karmaForm">
+        <input type="text" id="yazar" placeholder="İsminiz (Yazar)" required><br>
+        <textarea id="mesaj" placeholder="Karma mesajınız" required></textarea><br>
+        <input type="text" id="kategori" placeholder="Kategori" required><br> 
+        <button type="submit">Gönder</button>
+    </form>
+
+    <h2>Gönderilen Karmalar</h2>
+    <ul id="karmaList"></ul>
+
+    <script>
+        document.getElementById('karmaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const yazar = document.getElementById('yazar').value;
+            const mesaj = document.getElementById('mesaj').value;
+            const kategori = document.getElementById('kategori').value;
+
+            fetch('/api/karmalar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ yazar, mesaj, kategori })
+            })
+            .then(response => response.json())
+            .then(() => {
+                loadKarmas();
+                document.getElementById('karmaForm').reset();
+            })
+            .catch(error => console.error('Error posting karma:', error)); // Hata loglama eklendi
+        });
+
+        function loadKarmas() {
+            fetch('/api/karmalar')
+                .then(response => response.json())
+                .then(data => {
+                    const karmaList = document.getElementById('karmaList');
+                    karmaList.innerHTML = '';
+                    if (Array.isArray(data)) { // Verinin bir dizi olup olmadığını kontrol et
+                        data.forEach(karma => {
+                            const li = document.createElement('li');
+                            // Backend'den gelen DTO alanlarına göre güncelleme
+                            li.textContent = `${karma.yazar || 'Anonim'}: ${karma.mesaj || ''} [Kategori: ${karma.kategori || 'Belirtilmemiş'}]`;
+                            karmaList.appendChild(li);
+                        });
+                    } else {
+                        console.error('Fetched data is not an array:', data);
+                    }
+                })
+                .catch(error => console.error('Error loading karmas:', error)); // Hata loglama eklendi
+        }
+
+        // Sayfa açıldığında karmaları getir
+        loadKarmas();
+    </script>
+</body>
+</html> 
