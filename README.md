@@ -23,10 +23,3 @@ Karma Kutusu, kullanıcıların rastgele başkaları için küçük, anlamlı "g
 - H2 Database
 - Maven
 
-## 📦 Kurulum
-
-```bash
-git clone https://github.com/seda/karmakutusu.git
-cd karmakutusu
-./mvnw spring-boot:run
-``` 
